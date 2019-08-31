@@ -9,8 +9,9 @@
         public $subject = "";
         public $body = "";
         public $altbody = "";
-		public $args = "";
-		public $from = "";
+		public $args = array();
+        public $from_email = "";
+        public $from_name = "";
         public $to = array();
         public $html = true;
         public $replyTo = array();
@@ -20,25 +21,31 @@
 
         public function send()
         {
+            $credentials = $this->config();
+            $body = $this->render_file("views/" . $this->body . ".php", $this->args);
+
             $mail = new PHPMailer(true);
 
             try {
                 //Server settings
                 $mail->SMTPDebug = 0;                                       // Enable verbose debug output
                 $mail->isSMTP();                                            // Set mailer to use SMTP
-                $mail->Host       = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+                $mail->Host       = $credentials['MAIL_HOST'];  // Specify main and backup SMTP servers
                 $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-                $mail->Username   = 'bhaswanth.nexevo@gmail.com';                     // SMTP username
-                $mail->Password   = 'Basu@1997';                               // SMTP password
-                $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also accepted
-                $mail->Port       = 587;                                    // TCP port to connect to
+                $mail->Username   = $credentials['MAIL_USERNAME'];                     // SMTP username
+                $mail->Password   = $credentials['MAIL_PASSWORD'];                               // SMTP password
+                $mail->SMTPSecure = $credentials['MAIL_ENCRYPTION'];                                  // Enable TLS encryption, `ssl` also accepted
+                $mail->Port       = $credentials['MAIL_PORT'];                                    // TCP port to connect to
 
                 //Recipients
-                $mail->setFrom('bhaswanth.nexevo@gmail.com', 'Mailer');
+                $mail->setFrom($this->from_email, $this->from_email);
 
                 if(isset($this->to))
                 {
-                    $mail->addAddress('bhaswanthkumar6@gmail.com', 'Joe User');     // Add a recipient
+                    foreach($this->to as $item)
+                    {
+                        $mail->addAddress($item['email'], $item['name']);     // Add a recipient
+                    }
                 }
 
                 if(isset($this->replyTo) && count($this->replyTo) > 0)
@@ -48,28 +55,36 @@
 
                 if(isset($this->cc) && !empty($this->cc))
                 {
-                    $mail->addCC('cc@example.com');
+                    $mail->addCC($this->cc);
                 }
 
                 if(isset($this->bcc) && !empty($this->bcc))
                 {
-                    $mail->addBCC('bcc@example.com');
+                    $mail->addBCC($this->bcc);
+                }
+
+                if(isset($this->replyTo) && count($this->replyTo) > 0)
+                {
+                    $mail->addReplyTo($this->replyTo['email'], $this->replyTo['name']);
                 }
 
                 // Attachments
                 if(isset($this->files) && count($this->files))
                 {
-                    $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+                    foreach($this->files as $item)
+                    {
+                        $mail->addAttachment($item['file'], $item['name']);    // Optional name
+                    }
                 }
 
                 // Content
                 $mail->isHTML(true);                                  // Set email format to HTML
-                $mail->Subject = 'Here is the subject';
-                $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+                $mail->Subject = $this->subject;
+                $mail->Body    = $body;
 
                 if(isset($this->altbody) && !empty($this->altbody))
                 {
-                    $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+                    $mail->AltBody = $this->altbody;
                 }
 
                 if($mail->send())
@@ -84,4 +99,61 @@
                 // echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             }
         }
+
+        public function addReceiver($email, $name)
+        {
+            $data = array(
+                "email" => $email,
+                "name" => $name
+            );
+            array_push($this->to, $data);
+            return true;
+        }
+
+        public function addSender($email, $name)
+        {
+            $this->from_email = $email;
+            $this->from_name = $name;
+            return true;
+        }
+
+        public function addReply($email, $name)
+        {
+            $data = array(
+                "email" => $email,
+                "name" => $name
+            );
+            array_push($this->replyTo, $data);
+            return true;
+        }
+
+        public function addFile($file, $name)
+        {
+            $data = array(
+                "file" => $file,
+                "name" => $name
+            );
+            array_push($this->files, $data);
+            return true;
+        }
+
+        public function render_file($path, array $args)
+		{
+			ob_start();
+			include($path);
+			$var=ob_get_contents(); 
+			ob_end_clean();
+			return $var;
+        }
+        
+        public function config()
+		{
+			/* ob_start();
+			include('./credentials.php');
+			$var=ob_get_contents(); 
+			ob_end_clean();
+            return $var; */
+            $config = include("credentials.php");
+            return $config;
+		}
     }
