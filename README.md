@@ -6,8 +6,8 @@ SMTP Mailer is developed using [PHP Mailer](https://github.com/PHPMailer/PHPMail
     require_once "mail/mail.php";
 
     $mail = new Mail()  // Initiate Mailer;
-    $mail->addSender('bhaswanth.nexevo@gmail.com', 'Bhaswanth Class') // Add sender email and name;
-    $mail->addReceiver('bhaswanth.nexevo@gmail.com', 'Bhaswanth Receiver') // Add one receiver;
+    $mail->addSender('bhaswanth22@gmail.com', 'Bhaswanth Class') // Add sender email and name;
+    $mail->addReceiver('bhaswanth22@gmail.com', 'Bhaswanth Receiver') // Add one receiver;
     $mail->addReceiver('bhaswanthkumar6@gmail.com', 'Receiver Bhaswanth') // Add another receiver. You can add n number of receivers;
     $mail->subject = "Class Subject" // Add subject of the mail;
     $mail->body = "welcome" // Define the template name of the email body. This will be pointing to views/welcome.php;
