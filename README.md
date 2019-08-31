@@ -24,4 +24,4 @@ SMTP Mailer is developed using [PHP Mailer](https://github.com/PHPMailer/PHPMail
     }
 ```
 
-Thank you for using my package. Any feedbacks will be welcomed
+Thank you for using my package. Please rate my work at ***bhaswanthkumar6@gmail.com***
