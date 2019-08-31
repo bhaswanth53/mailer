@@ -24,4 +24,18 @@ SMTP Mailer is developed using [PHP Mailer](https://github.com/PHPMailer/PHPMail
     }
 ```
 
+## Utility Functions
+
+```php
+    $mail->addSender('email', 'name');  // To add Sender
+
+    $mail->addReceiver('email', 'name') // To add Receiver
+
+    $mail->addReply('name', 'name') // Add reply to email address
+
+    $mail->addFile('file', 'file_name') // To add attachment, you can add any number of attachments.
+
+    $mail->config() // To get the config
+```
+
 Thank you for using my package. Please rate my work at ***bhaswanthkumar6@gmail.com***
